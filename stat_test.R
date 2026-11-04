@@ -27,18 +27,11 @@ setwd(getCurrentFileLocation())
 library(broom)
 library(ggplot2)
 
-num_days <- 100
+num_days <- 120
 # 1. Load and combine the three station CSVs
 matera  <- read.csv(paste0("afullframe_Matera_all_new_",num_days,".csv"), na.strings = c("NaN", "NA"))
 iqaluit <- read.csv(paste0("afullframe_Iqaluit_all_new_",num_days,".csv"), na.strings = c("NaN", "NA"))
 darwin  <- read.csv(paste0("afullframe_Darwin_all_new_",num_days,".csv"), na.strings = c("NaN", "NA"))
-
-matera <- matera[matera$`doy` != 39,]
-matera <- matera[matera$`doy` != 47,]
-iqaluit <- iqaluit[iqaluit$`doy` != 39,]
-iqaluit <- iqaluit[iqaluit$`doy` != 47,]
-darwin <- darwin[darwin$`doy` != 39,]
-darwin <- darwin[darwin$`doy` != 47,]
 
 stations_df <- bind_rows(matera, iqaluit, darwin) %>%
   mutate(name = as.factor(name))

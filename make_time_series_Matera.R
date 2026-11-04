@@ -52,7 +52,7 @@ bigger_theme <- theme_classic(base_size = 20, base_family = "DejaVu Sans") +
   )
 
 # 2. File parsing and distance computation (vectorized)
-num_days <- 100
+num_days <- 120
 stormnum <- 1
 station_names <- c("Iqaluit", "Darwin", "Matera")
 station_abbrevs <- c("iqal", "darw", "mate")

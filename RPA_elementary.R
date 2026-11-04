@@ -121,7 +121,7 @@ paste_data <- function(name, title, ts_y, all_ts, rpa_plot_name, rpa_plot_RR, rp
   ))
 }
 
-num_days <- 100
+num_days <- 120
 
 # 1. Sin function (Deterministic)
 x <- seq(-num_days / 2, num_days / 2 - 1, by = 1/1)

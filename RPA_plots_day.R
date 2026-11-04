@@ -107,7 +107,7 @@ myRPA<-function(station_name, num_days, day) {
   return(c(TRUE, rpa_plot$RR, rpa_plot$DET, rpa_plot$NRLINE, rpa_plot$L, rpa_plot$ENTR, rpa_plot$rENTR, rpa_plot$LAM, rpa_plot$TT))
 }
 
-num_days <- 100
+num_days <- 120
 station_names <- c("Iqaluit", "Darwin", "Matera")
 
 for (numloc in 1:3) {

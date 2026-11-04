@@ -39,7 +39,7 @@ getCurrentFileLocation <- function() {
 
 setwd(getCurrentFileLocation())
 
-num_days <- 100
+num_days <- 120
 
 # -------------------------------------------------------------------------
 # Helper functions for LaTeX formatting
@@ -136,7 +136,7 @@ tab5_rows <- pmap_chr(station_comp, function(Metric, ANOVA_p_value, Kruskal_stat
 tab5_tex <- c(
   "\\vspace{-3pt}",
   "\\begin{table}[H]",
-  "\\caption{Omnibus unpaired comparison of RQA metrics across the three IGS stations using parametric One-Way ANOVA and non-parametric Kruskal--Wallis tests ($N = 98$ days per station).\\label{tab:station_comparison}}",
+  paste0("\\caption{Omnibus unpaired comparison of RQA metrics across the three IGS stations using parametric One-Way ANOVA and non-parametric Kruskal-Wallis tests ($N = ",num_days,"$ days per station).\\label{tab:station_comparison}}"),
   "\\begin{tabularx}{\\textwidth}{CCCC}",
   "\\toprule",
   "\\textbf{Metric} & \\textbf{ANOVA} $\\boldsymbol{p}$\\textbf{-value} & \\textbf{Kruskal stat.} & \\textbf{Kruskal} $\\boldsymbol{p}$\\textbf{-value} \\\\",
@@ -197,7 +197,7 @@ tab7_rows <- pmap_chr(friedman_df, function(Metric, Friedman_Chi, p_value) {
 tab7_tex <- c(
   "\\vspace{-3pt}",
   "\\begin{table}[H]",
-  "\\caption{Non-parametric Friedman rank-sum test results comparing the three stations blocked by Day of Year (DOY, $N = 98$ complete blocks, $\\text{df} = 2$).\\label{tab:friedman_results}}",
+  paste0("\\caption{Non-parametric Friedman rank-sum test results comparing the three stations blocked by Day of Year (DOY, $N = ",num_days,"$ complete blocks, $\\text{df} = 2$).\\label{tab:friedman_results}}"),
   "\\begin{tabularx}{\\textwidth}{CCC}",
   "\\toprule",
   "\\textbf{Metric} & \\textbf{Friedman} $\\boldsymbol{\\chi^2}$ & $\\boldsymbol{p}$\\textbf{-value} \\\\",
@@ -218,7 +218,6 @@ iqaluit <- read_csv(paste0("afullframe_Iqaluit_all_new_", num_days, ".csv"), na 
 darwin  <- read_csv(paste0("afullframe_Darwin_all_new_", num_days, ".csv"), na = c("NaN", "NA"), show_col_types = FALSE)
 
 stations_df <- bind_rows(matera, iqaluit, darwin) %>%
-  filter(!doy %in% c(39, 47)) %>%
   mutate(name = as.factor(name))
 
 manova_fit <- manova(cbind(RR, DET, NRLINE, L, ENTR, rENTR, LAM, TT) ~ name, data = stations_df)
@@ -235,12 +234,11 @@ tab8_tex <- c(
   "\\vspace{-3pt}",
   "\\begin{table}[H]",
   "\\caption{Multivariate Analysis of Variance (MANOVA) using Pillai's trace across all eight RQA metrics simultaneously across the three stations.\\label{tab:manova_fit}}",
-  "\\begin{tabularx}{\\textwidth}{CCCCCCC}",
+  "\\begin{tabularx}{\\textwidth}{CCCCCCCC}",
   "\\toprule",
-  "\\textbf{Effect} & \\textbf{Df} & \\textbf{Pillai's Trace} & \\textbf{Approx.} $\\boldsymbol{F}$ & \\textbf{Num. Df} & \\textbf{Den. Df} & $\\boldsymbol{p}$\\textbf{-value} \\\\",
+  "\\textbf{Effect} & \\textbf{Df} & \\textbf{Pillai's Trace} & \\textbf{Approx.} $\\boldsymbol{F}$ & \\textbf{Num. Df} & \\textbf{Den. Df} & $\\boldsymbol{p}$\\textbf{-value} & \\textbf{Residuals} \\\\",
   "\\midrule",
-  paste0("Station (name) & $", df_name, "$ & $", pillai_v, "$ & $", approx_f, "$ & $", num_df, "$ & $", den_df, "$ & $< 2.2 \\times 10^{-16}$ \\\\"),
-  paste0("Residuals & $", df_resid, "$ & - & - & - & - & - \\\\"),
+  paste0("Station (name) & $", df_name, "$ & $", pillai_v, "$ & $", approx_f, "$ & $", num_df, "$ & $", den_df, "$ & $< 2.2 \\times 10^{-16}$ & $", df_resid, "$ \\\\"),
   "\\bottomrule",
   "\\end{tabularx}",
   "\\end{table}",
@@ -251,8 +249,8 @@ write_tex_table(tab8_tex, paste0("table_manova_fit_",num_days,".tex"))
 # -------------------------------------------------------------------------
 # 6. Table 9: One-Sample Station vs. Benchmark Models (Wilcoxon p_adj > 0.05)
 # -------------------------------------------------------------------------
-vs_models_df <- read_csv(paste0("station_vs_models_", num_days, ".csv"), show_col_types = FALSE) %>%
-  filter(Wilcoxon_p_adj > 0.05)
+vs_models_df1 <- read_csv(paste0("station_vs_models_", num_days, ".csv"), show_col_types = FALSE)
+vs_models_df <- vs_models_df1[vs_models_df1$`Wilcoxon_p_adj` > 0.05,]
 
 tab9_rows <- pmap_chr(vs_models_df, function(Station, Model, Metric, Station_Median, Model_Value, Wilcoxon_p, T_test_p, Wilcoxon_p_adj) {
   paste(
@@ -335,7 +333,7 @@ tab11_rows <- pmap_chr(pub_df, function(Metric, Darwin, Iqaluit, Matera, Kruskal
 tab11_tex <- c(
   "\\vspace{-3pt}",
   "\\begin{table}[H]",
-  "\\caption{Non-parametric omnibus test statistics and bounded effect sizes: Kruskal--Wallis epsilon-squared ($\\varepsilon^2$) and Friedman Kendall's coefficient of concordance ($W$) across all eight RQA metrics.\\label{tab:publication_summary}}",
+  "\\caption{Non-parametric omnibus test statistics and bounded effect sizes: Kruskal-Wallis epsilon-squared ($\\varepsilon^2$) and Friedman Kendall's coefficient of concordance ($W$) across all eight RQA metrics.\\label{tab:publication_summary}}",
   "\\begin{tabularx}{\\textwidth}{CCCCCC}",
   "\\toprule",
   "\\textbf{Metric} & \\textbf{Kruskal stat.} & \\textbf{Kruskal} $\\boldsymbol{\\varepsilon^2}$ & \\textbf{Kruskal} $\\boldsymbol{p}$\\textbf{-value} & \\textbf{Friedman} $\\boldsymbol{\\chi^2}$ & \\textbf{Friedman Kendall} $\\boldsymbol{W}$ \\\\",
@@ -368,7 +366,7 @@ tab12_rows <- pmap_chr(pub_df, function(Metric, Darwin, Iqaluit, Matera, ...) {
 tab12_tex <- c(
   "\\vspace{-3pt}",
   "\\begin{table}[H]",
-  "\\caption{Station median and Interquartile Range (IQR, in parentheses) for each RQA metric across the $98$ analysed days in 2014.\\label{tab:IQR}}",
+  paste0("\\caption{Station median and Interquartile Range (IQR, in parentheses) for each RQA metric across the $",num_days,"$ analysed days in 2014.\\label{tab:IQR}}"),
   "\\begin{tabularx}{\\textwidth}{CCCC}",
   "\\toprule",
   "\\textbf{Metric} & \\textbf{Darwin} & \\textbf{Iqaluit} & \\textbf{Matera} \\\\",
