@@ -203,7 +203,8 @@ for (numloc in 1:3) {
         }
       }
       
-      filtval <- 10
+      filtval <- 51
+      print(max(storm_df$`horizontal(deg)`))
       tffilt <- storm_df[storm_df$`horizontal(deg)` < filtval,]
       cat(length(storm_df$`horizontal(deg)`), length(tffilt$`horizontal(deg)`), "\n")
       
