@@ -29,7 +29,7 @@ library(maps)
 library(mapdata)
 library(patchwork) # For combining the 3 maps into one figure
 
-# High-resolution world map data (matches screenshot coastline detail)
+# High-resolution world map data (coastline detail)
 world_hires <- map_data("worldHires")
 
 # Official IGS station coordinates and regional bounding boxes
@@ -47,7 +47,7 @@ stations <- data.frame(
   v_off = c( -0.65, -0.90, -1.30)
 )
 
-# Function to create the exact style from your screenshot
+# Function to create the style
 make_station_map <- function(st_row) {
   ggplot() +
     geom_polygon(
